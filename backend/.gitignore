@@ -1,0 +1,66 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environments (just in case)
+.venv/
+venv/
+env/
+ENV/
+
+# Python egg metadata
+*.egg-info/
+dist/
+build/
+
+# Logs
+*.log
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Pytest
+.pytest_cache/
+
+# MyPy, Ruff, etc
+.mypy_cache/
+.dmypy.json
+ruff_cache/
+.pyre/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Docker
+*.bak
+__docker_context__/
+
+# Local dev artifacts
+*.db
+*.sqlite3
+instance/
+*.pem
+*.env
+.env.*
+
+# macOS/Linux/Windows system files
+.DS_Store
+Thumbs.db
+
+# FastAPI static/media (if used)
+staticfiles/
+media/
+uploads/
