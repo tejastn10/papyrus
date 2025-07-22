@@ -1,3 +1,5 @@
+import { fixupConfigRules } from "@eslint/compat";
+import reactRefresh from "eslint-plugin-react-refresh";
 import globals from "globals";
 import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
@@ -16,10 +18,8 @@ const compat = new FlatCompat({
 const eslintConfig = [
 	{
 		ignores: [
-			"**/public",
-			"**/content",
-			"**/next-env.d.ts",
-			"**/next.config.ts",
+			"**/dist",
+			"**/vite.config.ts",
 			"**/node_modules",
 			"**/.next",
 			"**/.DS_Store",
@@ -35,14 +35,32 @@ const eslintConfig = [
 			"**/*.json",
 		],
 	},
-	...compat.extends("eslint:recommended", "next/core-web-vitals", "next/typescript"),
+	...fixupConfigRules(
+		compat.extends(
+			"eslint:recommended",
+			"plugin:react/recommended",
+			"plugin:react/jsx-runtime",
+			"plugin:react-hooks/recommended",
+			"plugin:@typescript-eslint/recommended"
+		)
+	),
 	{
+		plugins: {
+			"react-refresh": reactRefresh,
+		},
+
 		languageOptions: {
 			globals: {
 				...globals.browser,
 			},
 
 			parser: tsParser,
+			ecmaVersion: 5,
+			sourceType: "script",
+
+			parserOptions: {
+				project: "./tsconfig.eslint.json",
+			},
 		},
 
 		settings: {
@@ -52,21 +70,21 @@ const eslintConfig = [
 		},
 
 		rules: {
+			"react-refresh/only-export-components": [
+				"warn",
+				{
+					allowConstantExport: true,
+				},
+			],
+
 			eqeqeq: "error",
 			"no-implicit-coercion": "error",
 			"consistent-return": "error",
 			semi: "error",
 			quotes: ["error", "double"],
 
-			indent: [
-				"error",
-				"tab",
-				{
-					SwitchCase: 1,
-				},
-			],
-
-			"@typescript-eslint/no-explicit-any": "off",
+			// ? Disabled as Prettier handles these
+			indent: "off",
 		},
 	},
 ];
