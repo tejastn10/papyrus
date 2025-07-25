@@ -4,14 +4,8 @@ from routers import health
 
 app = FastAPI(
     title="Papyrus",
-    description="PDF editor and viewer",
+    description="Secure API for removing and adding passwords from and to PDF",
     version="0.0.1",
 )
-
-
-@app.get("/")
-async def root():
-    return {"message": "Welcome to Papyrus!"}
-
 
 app.include_router(health.router)
