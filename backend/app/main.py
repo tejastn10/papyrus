@@ -1,9 +1,7 @@
-from fastapi import FastAPI, Request, status
-from fastapi.encoders import jsonable_encoder
-from fastapi.exceptions import RequestValidationError
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from starlette.exceptions import HTTPException as StarletteHTTPException
+
+from app.middleware.request import RequestMiddleware
 
 from app.config.core import settings
 
@@ -18,6 +16,7 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+# * Setting Required Middlewares
 # Set all CORS enabled origins
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
@@ -27,5 +26,8 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+# * Setting Custom Middlewares
+app.add_middleware(RequestMiddleware)
 
 app.include_router(health.router)
