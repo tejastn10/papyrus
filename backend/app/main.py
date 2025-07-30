@@ -4,8 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.middleware.request import RequestMiddleware
 
 from app.config.core import settings
+from app.config.swagger import openapi_kwargs
 
-from app.routers import health
+from app.models.health import HealthStatus
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -14,6 +15,7 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     docs_url="/docs",
     redoc_url="/redoc",
+    **openapi_kwargs,
 )
 
 # * Setting Required Middlewares
@@ -30,4 +32,22 @@ if settings.BACKEND_CORS_ORIGINS:
 # * Setting Custom Middlewares
 app.add_middleware(RequestMiddleware)
 
-app.include_router(health.router)
+
+@app.get(
+    "/",
+    tags=["Health"],
+    summary="Health check endpoint",
+    description="Returns the health status of the API.",
+    response_description="The health status",
+    operation_id="getHealthStatus",
+    response_model=HealthStatus,
+    responses={
+        200: {"description": "Successful health check"},
+        404: {"description": "Not found"},
+    },
+)
+async def health():
+    """
+    Returns the health status of the API.
+    """
+    return {"status": "healthy"}
