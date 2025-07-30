@@ -15,6 +15,7 @@ pytest = "^8.4.1"
 pypdf = "^5.7.0"
 pydantic = "^2.11.7"
 pydantic-settings = "^2.10.1"
+pre-commit = "^4.2.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -34,4 +35,3 @@ build-backend = "poetry.core.masonry.api"
 start = "uvicorn app.main:app --host: 0.0.0.0 --port 5000 --reload"
 test = "pytest"
 test-cov = "pytest --coverage --cov-report=html"
-
