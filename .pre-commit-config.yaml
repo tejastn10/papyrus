@@ -12,6 +12,7 @@ repos:
         files: ^backend/
     -   id: name-tests-test
         files: ^backend/
+        exclude: ^backend/app/models
 
 -   repo: https://github.com/psf/black
     rev: 22.10.0
