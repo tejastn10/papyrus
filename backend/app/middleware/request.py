@@ -1,3 +1,11 @@
+"""
+Request logging middleware and helpers.
+
+Adds a unique request-ID to every incoming request, logs both the
+request and the corresponding response (including timing), and
+delegates all formatting to `app.utils.logger.log_info`.
+"""
+
 import time
 import uuid
 
@@ -9,13 +17,38 @@ from app.utils.logger import log_info
 
 
 class RequestLogger:
-    """Utility class for logging HTTP Requests"""
+    """
+    Stateless helper for request / response logging.
+
+    The logger writes:
+    - Request ID (uuid4)
+    - Method + URL
+    - Client IP
+    - User agent
+    - Status code
+    - Response time
+    - Optional file size (when streaming files)
+    """
 
     @staticmethod
     def log_request(
-        request_id: str, method: str, url: str, client_ip: str, user_agent: str = None
-    ):
-        """Log incoming request details"""
+        *,
+        request_id: str,
+        method: str,
+        url: str,
+        client_ip: str,
+        user_agent: str | None = None,
+    ) -> None:
+        """
+        Write an INFO-level log line for an incoming request.
+
+        Args:
+            request_id: Correlation ID (uuid4).
+            method: HTTP method, e.g. GET/POST.
+            url: Full URL as received by FastAPI.
+            client_ip: Remote client's IP address.
+            user_agent: Raw User-Agent header, if present.
+        """
         log_info(
             f"Request {request_id}: {method} {url} from {client_ip}",
             user_agent=user_agent,
@@ -24,24 +57,43 @@ class RequestLogger:
 
     @staticmethod
     def log_response(
-        request_id: str, statuc_code: int, response_time: float, file_size: int = None
-    ):
-        """Log outgoing response details"""
+        *,
+        request_id: str,
+        status_code: int,
+        response_time: float,
+        file_size: int | None = None,
+    ) -> None:
+        """
+        Write an INFO-level log line for the outgoing response.
+
+        Args:
+            request_id: Correlation ID used in `log_request`.
+            status_code: HTTP status code (e.g. 200, 404).
+            response_time: Time taken to serve the request, in seconds.
+            file_size: Optional size in bytes for streamed files.
+        """
         log_info(
-            f"Response {request_id}: {statuc_code} in {response_time:.3f}s",
+            f"Response {request_id}: {status_code} in {response_time:.3f}s",
             file_size=file_size,
             timestamp=datetime.now().isoformat(),
         )
 
 
 class RequestMiddleware(BaseHTTPMiddleware):
-    """Middleware for logging HTTP requests and responses"""
+    """
+    ASGI middleware that logs every request/response pair.
+
+    * Generates a UUID-based request ID.
+    * Captures client IP and User-Agent.
+    * Measures processing time (`call_next`).
+    * Logs an error response if an unhandled exception bubbles up.
+    """
 
     async def dispatch(self, request: Request, call_next):
-        # ? Generate unique Request ID
-        request_id = uuid.uuid4()
+        # ? Generate unique request ID
+        request_id = str(uuid.uuid4())
 
-        # ? Get Client IP
+        # ? Determine client IP (may be "UNKNOWN" for some ASGI servers)
         client_ip = request.client.host if request.client else "UNKNOWN"
 
         # ? Log the incoming request
@@ -57,28 +109,25 @@ class RequestMiddleware(BaseHTTPMiddleware):
         start_time = time.time()
 
         try:
-            # * Process Request
+            # * Hand control to the downstream application
             response = await call_next(request)
+            elapsed = time.time() - start_time
 
-            # ? Track response time
-            end_time = time.time() - start_time
-
-            # ? Log the outgoing repsonse
+            # ? Log success response
             RequestLogger.log_response(
                 request_id=request_id,
-                statuc_code=response.status_code,
-                response_time=end_time,
+                status_code=response.status_code,
+                response_time=elapsed,
             )
             return response
+
         except Exception:
-            # ? Calculate response time for failed request
-            response_time = time.time() - start_time
-            # ? Log the error response data
+            # ? Always log the error case with status 500 (or custom code)
+            elapsed = time.time() - start_time
             RequestLogger.log_response(
                 request_id=request_id,
-                statuc_code=418,
-                response_time=response_time,
+                status_code=500,
+                response_time=elapsed,
             )
-
-            # ! Raising this for FASTApi to handle it
+            # ! Re-raise so FastAPI’s global exception handler deals with it
             raise
