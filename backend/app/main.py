@@ -6,7 +6,7 @@ from app.middleware.request import RequestMiddleware
 from app.config.core import settings
 from app.config.swagger import openapi_kwargs
 
-from app.models.health import HealthStatus
+from app.models.response import HealthResponse, ErrorResponse
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -40,10 +40,21 @@ app.add_middleware(RequestMiddleware)
     description="Returns the health status of the API.",
     response_description="The health status",
     operation_id="getHealthStatus",
-    response_model=HealthStatus,
+    response_model=HealthResponse,
     responses={
         200: {"description": "Successful health check"},
-        404: {"description": "Not found"},
+        500: {
+            "description": "Not found",
+            "model": ErrorResponse,
+            "content": {
+                "application/json": {
+                    "example": {
+                        "message": "Internal server error",
+                        "error": None,
+                    },
+                },
+            },
+        },
     },
 )
 async def health():
