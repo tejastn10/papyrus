@@ -1,3 +1,26 @@
+"""
+PasswordService - PDF password (un)locking layer
+
+This module exposes a single façade class `PasswordService` with two async
+methods:
+
+* **process_password_removal** - Remove an existing password from a PDF.
+* **process_password_addition** - Add a new password to an unlocked PDF.
+
+Each method follows the same workflow:
+
+1. **Validate** the uploaded file (`validate_pdf`).
+2. **Read** file bytes into memory.
+3. Call the low-level PDF helper (`unprotect_pdf` / `protect_pdf`).
+4. **Encode** the resulting PDF to Base64 for JSON transport.
+5. Build and return a typed Pydantic response model (`PasswordRemovalResponse` / `PasswordAdditionResponse`).
+
+All operations are fully in-memory (no disk writes).
+Errors bubble up as either `FileValidationError` (input issues) or plain
+`Exception` for unexpected failures, and are logged via `app.utils.logger`.
+
+"""
+
 from fastapi import UploadFile
 
 from app.models.response import PasswordRemovalResponse, PasswordAdditionResponse
