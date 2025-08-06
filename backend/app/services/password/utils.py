@@ -15,8 +15,8 @@ import io
 import base64
 
 from typing import Tuple
+from pypdf import PdfReader, PdfWriter
 from fastapi import UploadFile
-from pypgf import PdfReader, PdfWriter
 
 from app.models.response import ErrorResponse
 
