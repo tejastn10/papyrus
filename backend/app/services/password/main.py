@@ -65,7 +65,7 @@ class PasswordService:
 
             locked_pdf_data = protect_pdf(pdf_bytes=pdf_data, password=password)
             encoded_pdf = encode_pdf_to_base64(locked_pdf_data)
-            filename = append_state_suffix(file.filnename, "locked")
+            filename = append_state_suffix(file.filename, "locked")
 
             log_info(f"Successfully processed PDF: {file.filename}")
 
@@ -118,7 +118,7 @@ class PasswordService:
 
             unlocked_pdf_data = unprotect_pdf(pdf_bytes=pdf_data, password=password)
             encoded_pdf = encode_pdf_to_base64(unlocked_pdf_data)
-            filename = append_state_suffix(file.filnename, "unlocked")
+            filename = append_state_suffix(file.filename, "unlocked")
 
             log_info(f"Successfully processed PDF: {file.filename}")
 
