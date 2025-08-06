@@ -27,7 +27,7 @@ from app.models.response import PasswordRemovalResponse, PasswordAdditionRespons
 
 from app.utils.logger import log_info, log_error
 
-from utils import (
+from app.services.password.utils import (
     validate_pdf,
     append_state_suffix,
     encode_pdf_to_base64,
