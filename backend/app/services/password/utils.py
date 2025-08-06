@@ -16,12 +16,12 @@ import base64
 
 from typing import Tuple
 from pypdf import PdfReader, PdfWriter
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException
 
 from app.models.response import ErrorResponse
 
 
-class FileValidationError(ErrorResponse):
+class FileValidationError(HTTPException):
     """
     Raised when an uploaded file does not meet PDF validation criteria.
 
