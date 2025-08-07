@@ -21,13 +21,13 @@ startup—making bugs obvious.
 
 from fastapi import APIRouter
 
-from app.api.v1.endpoints.password import password
+from app.api.v1.endpoints import password
 from app.utils.logger import log_info, log_error
 
-api_router: APIRouter = APIRouter()
+api_v1_router: APIRouter = APIRouter()
 
 try:
-    api_router.include_router(
+    api_v1_router.include_router(
         password.router,
         prefix="/password",
         tags=["Password"],
