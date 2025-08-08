@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.v1.api import api_v1_router
+
 from app.middleware.request import RequestMiddleware
 
 from app.config.core import settings
@@ -31,6 +33,9 @@ if settings.BACKEND_CORS_ORIGINS:
 
 # * Setting Custom Middlewares
 app.add_middleware(RequestMiddleware)
+
+# * API Routes
+app.include_router(api_v1_router)
 
 
 @app.get(
