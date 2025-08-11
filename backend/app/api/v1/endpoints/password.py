@@ -21,11 +21,10 @@ Error handling
 * **418 I'm a teapot** - Catch-all for unexpected processing errors.
 """
 
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 
 from app.services.password.main import FileValidationError, PasswordService
 
-from app.models.request import PasswordAdditionRequest, PasswordRemovalRequest
 from app.models.response import PasswordAdditionResponse, PasswordRemovalResponse
 
 router = APIRouter()
@@ -38,7 +37,7 @@ router = APIRouter()
 )
 async def lock(
     file: UploadFile = File(..., description="PDF file to lock"),
-    body: PasswordAdditionRequest = Depends(),
+    password: str = Form(..., description="Password for the PDF file"),
 ):
     """
     Encrypt an uploaded PDF with *password*.
@@ -62,7 +61,7 @@ async def lock(
         * 418 - For any other unexpected failure during processing.
     """
     try:
-        return await PasswordService.lock(file, body.password)
+        return await PasswordService.lock(file, password)
     except FileValidationError as e:
         raise HTTPException(status_code=400, detail={"message": "Bad Request", "error": str(e)}) from e
     except Exception as e:
@@ -79,7 +78,7 @@ async def lock(
 )
 async def unlock(
     file: UploadFile = File(..., description="PDF file to unlock"),
-    body: PasswordRemovalRequest = Depends(),
+    password: str = Form(..., description="Password for the PDF file"),
 ):
     """
     Remove password protection from an uploaded PDF.
@@ -103,7 +102,7 @@ async def unlock(
         * 418 - For any other unexpected failure during processing.
     """
     try:
-        return await PasswordService.unlock(file, body.password)
+        return await PasswordService.unlock(file, password)
     except FileValidationError as e:
         raise HTTPException(status_code=400, detail={"message": "Bad Request", "error": str(e)}) from e
     except Exception as e:
