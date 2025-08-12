@@ -144,7 +144,7 @@ def protect_pdf(pdf_bytes: bytes, password: str) -> bytes:
         pdf_reader = PdfReader(pdf_stream)
 
         if pdf_reader.is_encrypted:
-            return Exception("PDF is already locked")
+            raise Exception("PDF is already locked")
 
         pdf_writer = PdfWriter()
 
@@ -209,4 +209,4 @@ def unprotect_pdf(pdf_bytes: bytes, password: str) -> bytes:
         return output_stream.getvalue()
 
     except Exception as e:
-        return Exception(f"Failed to remove password {str(e)}")
+        raise Exception(f"Failed to remove password {str(e)}")
