@@ -85,6 +85,8 @@ const eslintConfig = [
 
 			// ? Disabled as Prettier handles these
 			indent: "off",
+
+			"@typescript-eslint/no-explicit-any": "off",
 		},
 	},
 ];
