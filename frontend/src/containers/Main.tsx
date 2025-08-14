@@ -11,7 +11,8 @@ import { RcFile } from "antd/es/upload";
 import { FileUpload } from "../components/FileUpload";
 import { FileDownload } from "../components/FileDownload";
 
-import { pdfApi } from "./api";
+import { lock, unlock, download } from "./api";
+
 import { logError } from "../log/logger";
 import { ActiveTab, Status, PasswordResponseData } from "./types";
 
@@ -56,9 +57,9 @@ const Main: FC = () => {
 		try {
 			let response;
 			if (activeTab === "lock") {
-				response = await pdfApi.lock({ file, password });
+				response = await lock({ file, password });
 			} else {
-				response = await pdfApi.unlock({ file, password });
+				response = await unlock({ file, password });
 			}
 
 			setResult((response as AxiosResponse<PasswordResponseData>).data);
@@ -95,7 +96,7 @@ const Main: FC = () => {
 		if (result) {
 			try {
 				const { filename, file_data } = result;
-				pdfApi.download({ filename, file_data });
+				download({ filename, file_data });
 				messageApi.success("Download started!");
 
 				setFile(null);
