@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import { URLVersions } from "../helper";
 
-type AnyValue = undefined | null | string | number | boolean | Record<string, unknown>;
+type AnyValue = undefined | null | string | number | boolean | Record<string, unknown> | FormData;
 
 type FetchFromLocalStorage = {
 	key: string;

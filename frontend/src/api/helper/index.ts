@@ -17,7 +17,7 @@ import {
 } from "../types";
 
 enum URLVersions {
-	V1 = "/api/v1",
+	V1 = "/",
 }
 
 const saveToLocalStorage = ({ key, value }: SaveToLocalStorage): void => {
@@ -84,9 +84,9 @@ const getRequestConfig = (
 	}
 
 	config = {
+		headers,
 		...axiosRequestConfig,
 		...customAPIConfig,
-		headers,
 	};
 
 	// Prepend version to baseURL if provided
