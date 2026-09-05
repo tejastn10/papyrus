@@ -27,7 +27,7 @@ export default defineConfig({
 	// Resolve configuration
 	resolve: {
 		alias: {
-			"@": path.resolve(__dirname, "src"), // Shorten the import path for src directory
+			"@": path.resolve(import.meta.dirname, "src"), // Shorten the import path for src directory
 		},
 	},
 
